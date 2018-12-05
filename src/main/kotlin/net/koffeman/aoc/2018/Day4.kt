@@ -39,7 +39,7 @@ class Day4 : AdventOfCodePuzzle {
                 .maxBy { entry -> entry.value }
                 ?.key
 
-        return guardPopularMinutePair!!.first * guardPopularMinutePair!!.second
+        return guardPopularMinutePair!!.first * guardPopularMinutePair.second
     }
 
     data class LogRecord(val dateTime:LocalDateTime, val event:String) {
@@ -68,7 +68,7 @@ class Day4 : AdventOfCodePuzzle {
             var state = true
             var next = logRecords.sortedByDescending { logRecord -> logRecord.dateTime }.last()
             var remaining = logRecords.sortedByDescending { logRecord -> logRecord.dateTime }.dropLast(1)
-            var minutesAsleep = mutableListOf<Int>()
+            val minutesAsleep = mutableListOf<Int>()
 
             for (i in 0..59) {
 
@@ -84,12 +84,12 @@ class Day4 : AdventOfCodePuzzle {
                     minutesAsleep.add(i)
                 }
             }
-            return minutesAsleep;
+            return minutesAsleep
         }
 
         companion object {
             fun parse(input: List<String>) : List<Shift> {
-                var shifts = mutableListOf<Shift>()
+                val shifts = mutableListOf<Shift>()
                 input
                         .map { s -> LogRecord.from(s) }
                         .sortedBy { logRecord -> logRecord.dateTime }
