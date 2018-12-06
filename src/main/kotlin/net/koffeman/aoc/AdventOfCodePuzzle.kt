@@ -15,9 +15,11 @@ interface AdventOfCodePuzzle {
 
         val startTime = System.currentTimeMillis()
         val part1 = part1(input)
-        val part1elapsed = System.currentTimeMillis() - startTime
+        val benchMark1 = System.currentTimeMillis()
+        val part1elapsed = benchMark1 - startTime
         val part2 = part2(input)
-        val part2elapsed = System.currentTimeMillis() - part1elapsed
+        val benchMark2 = System.currentTimeMillis()
+        val part2elapsed = benchMark2 - benchMark1
 
         println("Solving puzzle for day $day of $year .. ")
         println("----------------------------------------")

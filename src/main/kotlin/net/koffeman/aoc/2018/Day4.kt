@@ -7,59 +7,25 @@ import java.time.LocalTime
 
 class Day4 : AdventOfCodePuzzle {
 
-    override fun part1(input: List<String>): Any {
-
-        val shifts = Shift.parse(input)
-        val guardWithMostMinutes = shifts
-                .groupBy { shift -> shift.guard }
-                .map { entry -> Pair(entry.key, entry.value.map { shift -> shift.getMinutesAsleep() }.flatten()) }
-                .maxBy { pair -> pair.second.size }
-                ?.first
-
-        val popularMinute = shifts
-                .filter { shift -> shift.guard == guardWithMostMinutes }
-                .map { shift -> shift.getMinutesAsleep() }
-                .flatten()
-                .groupingBy { i -> i }
-                .eachCount()
-                .maxBy { entry -> entry.value }
-                ?.key
-
-        return guardWithMostMinutes!! * popularMinute!!
+    override fun part1(input: List<String>): Any = with (Shift.parse(input)) {
+         val guardWithMostMinutes = guardWithMostMinutes()
+            guardWithMostMinutes * popularMinuteByGuard(guardWithMostMinutes)
     }
 
-    override fun part2(input: List<String>): Any {
+    override fun part2(input: List<String>): Any = with (
+                Shift.parse(input)
+                    .map { shift -> shift.minutesAsleep().map { minute -> shift.guard to minute } }.flatten()
+                    .groupingBy { pair -> pair }.eachCount().maxBy { entry -> entry.value }
+                    ?.key!!
+        ) {first * second}
 
-        val shifts = Shift.parse(input)
-        val guardPopularMinutePair = shifts
-                .map { shift -> shift.getMinutesAsleep().map { minute -> Pair(shift.guard, minute) } }
-                .flatten()
-                .groupingBy { pair -> pair }
-                .eachCount()
-                .maxBy { entry -> entry.value }
-                ?.key
+    private fun List<Shift>.guardWithMostMinutes() : Int = this.groupBy { shift -> shift.guard }.map { entry -> entry.key to entry.value.map { shift -> shift.minutesAsleep() }.flatten() }.maxBy { pair -> pair.second.size }?.first!!
 
-        return guardPopularMinutePair!!.first * guardPopularMinutePair.second
-    }
-
-    data class LogRecord(val dateTime:LocalDateTime, val event:String) {
-
-        fun isNewShift(): Boolean {
-            return "Guard #([0-9]+) begins shift".toRegex().matches(event)
-        }
-
-        companion object {
-            fun from(s:String) : LogRecord {
-                val find = "^\\[([0-9-]{10}) ([0-9:]{5})\\] (.+)$".toRegex().find(s)
-                val (date, time, event) = find!!.destructured
-                return LogRecord(LocalDateTime.of(LocalDate.parse(date), LocalTime.parse(time)), event)
-            }
-        }
-    }
+    private fun List<Shift>.popularMinuteByGuard(guard : Int) = this.filter { shift -> shift.guard == guard }.map { shift -> shift.minutesAsleep() }.flatten().groupingBy { i -> i }.eachCount().maxBy { entry -> entry.value }?.key!!
 
     class Shift(val dateTime:LocalDateTime, val guard:Int, var logRecords:MutableList<LogRecord>) {
 
-        fun getMinutesAsleep() : List<Int> {
+        fun minutesAsleep() : List<Int> {
 
             if (logRecords.isEmpty()) {
                 return emptyList()
@@ -88,25 +54,27 @@ class Day4 : AdventOfCodePuzzle {
         }
 
         companion object {
-            fun parse(input: List<String>) : List<Shift> {
-                val shifts = mutableListOf<Shift>()
-                input
-                        .map { s -> LogRecord.from(s) }
-                        .sortedBy { logRecord -> logRecord.dateTime }
+            private fun from (logRecord:LogRecord) : Shift =
+                Shift(logRecord.dateTime, LogRecord.SHIFT_START_REGEX.toRegex().find(logRecord.event)!!.groups[1]!!.value.toInt(), mutableListOf())
+
+            fun parse(input: List<String>) : List<Shift> =
+                mutableListOf<Shift>().apply {
+                    input
+                        .map { s -> LogRecord.from(s) }.sortedBy { logRecord -> logRecord.dateTime }
                         .forEach { logRecord ->
-                            if (logRecord.isNewShift()) {
-                                val guard = "Guard #([0-9]+) begins shift".toRegex().find(logRecord.event)!!.groups[1]!!.value.toInt()
-                                shifts.add(Shift(logRecord.dateTime, guard, mutableListOf()))
-                            } else {
-                                shifts.last().logRecords.add(logRecord)
-                            }
+                            if (logRecord.isNewShift()) add(Shift.from(logRecord)) else last().logRecords.add(logRecord)
                         }
-                return shifts
-            }
+                }
         }
     }
 
-
+    data class LogRecord(val dateTime:LocalDateTime, val event:String) {
+        fun isNewShift(): Boolean = SHIFT_START_REGEX.toRegex().matches(event)
+        companion object {
+            const val SHIFT_START_REGEX = "Guard #([0-9]+) begins shift"
+            fun from(s:String) : LogRecord = "^\\[([0-9-]{10}) ([0-9:]{5})\\] (.+)$".toRegex().find(s)!!.destructured.let { (date, time, event) -> LogRecord(LocalDateTime.of(LocalDate.parse(date), LocalTime.parse(time)), event) }
+        }
+    }
 }
 
 fun main() = Day4().solve()
