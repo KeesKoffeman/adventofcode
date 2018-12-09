@@ -10,4 +10,5 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib")) 
     testCompile("junit:junit:4.12")
+    compile(kotlin("script-runtime"))
 }
