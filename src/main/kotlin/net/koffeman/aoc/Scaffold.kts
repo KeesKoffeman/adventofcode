@@ -58,12 +58,12 @@ class Day${day}Test {
 
     @Test
     fun testPart1() {
-        Assert.assertEquals("", day$day.part1(listOf(input)))
+        Assert.assertEquals("", day$day.part1(input.lines()))
     }
 
     @Test
     fun testPart2() {
-        Assert.assertEquals("", day$day.part2(listOf(input)))
+        Assert.assertEquals("", day$day.part2(input.lines()))
     }
 }
 """)
