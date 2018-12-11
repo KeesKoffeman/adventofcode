@@ -53,8 +53,8 @@ import org.junit.Test
 
 class Day${day}Test {
 
-    val day$day = Day$day()
-    val input = ""
+    private val day$day = Day$day()
+    private val input = ""
 
     @Test
     fun testPart1() {

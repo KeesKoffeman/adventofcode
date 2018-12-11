@@ -24,10 +24,10 @@ interface AdventOfCodePuzzle {
         println("Solving puzzle for day $day of $year .. ")
         println("----------------------------------------")
         println(" * Part 1: $part1                       ")
-        println(" - Took $part1elapsed ms to complete .. ")
+        println(" - Took $part1elapsed ms to complete.   ")
         println("----------------------------------------")
         println(" * Part 2: $part2                       ")
-        println(" - Took $part2elapsed ms to complete .. ")
+        println(" - Took $part2elapsed ms to complete.   ")
         println("----------------------------------------")
     }
 }
