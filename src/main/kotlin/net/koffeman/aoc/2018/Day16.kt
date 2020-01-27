@@ -4,17 +4,14 @@ import net.koffeman.aoc.AdventOfCodePuzzle
 class Day16 : AdventOfCodePuzzle {
 
     override fun part1(input: List<String>):Any = Sampler.from(input).findNumberSamplesWithMoreThanThreePossibleOperations()
-    override fun part2(input: List<String>) = Program(input.subList(3006, input.size), Sampler.from(input).dictionary()).compute()
+    override fun part2(input: List<String>) = Program.from(input.subList(3006, input.size), Sampler.from(input).dictionary()).compute()
 }
 
-class Program(val input : List<String>, private val dictionary : Map<Int, Operations>) {
+open class Program(protected val instructions : List<Instruction>) {
 
-    private val instructions : List<Instruction>
     private var register = listOf(0,0,0,0)
 
-    init { instructions = input.map { Sampler.parse(it) }.map { Instruction(dictionary[it[0]]!!, it[1], it[2], it[3]) } }
-
-    fun compute(): Int {
+    open fun compute(): Int {
         instructions.forEach {
             register = it.compute(register)
         }
@@ -23,12 +20,14 @@ class Program(val input : List<String>, private val dictionary : Map<Int, Operat
 
     class Instruction(private val operation : Operations, private val inputA:Int, private val inputB:Int, private val output:Int) {
 
+        override fun toString() = "${operation.toString().toLowerCase()} $inputA $inputB $output"
+
         fun compute(register: List<Int>): List<Int> {
 
             var computed = register.toMutableList()
 
-            val rA = register[inputA]
-            val rB = register[inputB]
+            val rA = register.getOrNull(inputA)?:0
+            val rB = register.getOrNull(inputB)?:0
             val vA = inputA
             val vB = inputB
 
@@ -53,6 +52,10 @@ class Program(val input : List<String>, private val dictionary : Map<Int, Operat
 
             return computed
         }
+    }
+
+    companion object {
+        fun from(input : List<String>, dictionary : Map<Int, Operations>) = Program(input.map { Sampler.parse(it) }.map { Instruction(dictionary[it[0]]!!, it[1], it[2], it[3]) })
     }
 }
 

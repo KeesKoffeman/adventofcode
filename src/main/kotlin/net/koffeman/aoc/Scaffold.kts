@@ -28,7 +28,7 @@ class Day$day : AdventOfCodePuzzle {
     override fun part2(input: List<String>) = ""
 }
 
-fun main(args: Array<String>) = Day$day().solve()
+fun main() = Day$day().solve()
 """)
     println(" *  Created '${sourceFile.path}'.")
 }
@@ -54,7 +54,7 @@ import org.junit.Test
 class Day${day}Test {
 
     private val day$day = Day$day()
-    private val input = ""
+    private     val input = ""
 
     @Test
     fun testPart1() {

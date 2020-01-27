@@ -30,4 +30,8 @@ interface AdventOfCodePuzzle {
         println(" - Took $part2elapsed ms to complete.   ")
         println("----------------------------------------")
     }
+
+    companion object {
+        fun commaSeparatedIntsToListOfInt(input : List<String>) : List<List<Int>> = input.map { s -> s.split(",").map { s -> s.toInt() } }
+    }
 }
